@@ -1,38 +1,10 @@
-use std::{collections::HashMap, sync::Arc};
+use std::sync::Arc;
 
-use serde::{Deserialize, Serialize};
 use tokio::sync::RwLock;
-use trust_dns_resolver::error::ResolveError;
 
-pub const TUNNEL_SERVER_PORT: u16 = 11011;
-pub const TUNNEL_PACKET_MAX_SIZE: usize = 1024;
 type ArcLock<T> = Arc<RwLock<T>>;
 
-#[derive(Debug, Serialize, Deserialize)]
-pub enum TunnelHeader {
-    Open([u8; 32]),
-    Secure([u8; 32]),
-    Encrypted(Vec<u8>, Vec<u8>),
-    KeepAlive,
-    Close,
-}
-
-mod tunnel_header;
-
-#[derive(Debug)]
-pub enum TunnelCreateError {
-    LocalIp(local_ip_address::Error),
-    UdpSockerCreate(std::io::Error),
-    Dns(ResolveError),
-    Other,
-}
-pub struct Tunnel {
-    uuid: u64,
-    sender: flume::Sender<Vec<u8>>,
-    receiver: flume::Receiver<Vec<u8>>,
-    copies: ArcLock<HashMap<u64, flume::Sender<Vec<u8>>>>,
-}
-
+mod udp;
 mod tunnel;
 
 #[cfg(test)]
@@ -46,7 +18,7 @@ mod key_exchange {
     // use rand_core::OsRng;
     use x25519_dalek::{EphemeralSecret, PublicKey};
 
-    use crate::{tunnel, Tunnel};
+    use crate::{tunnel, tunnel::Tunnel, TUNNEL_SERVER_PORT};
 
     #[test]
     fn key_swap() {
@@ -122,7 +94,7 @@ mod key_exchange {
             .enable_all()
             .build()
             .expect("Could not create tokio runtime");
-        rt.spawn(Tunnel::server());
+        rt.spawn(Tunnel::server(("0.0.0.0", TUNNEL_SERVER_PORT)));
         let _ = rt.block_on(Tunnel::client(Url::parse("http://localhost").unwrap()));
     }
 }

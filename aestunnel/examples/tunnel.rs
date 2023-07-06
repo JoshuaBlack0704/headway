@@ -1,4 +1,4 @@
-use aestunnel::Tunnel;
+use aestunnel::{Tunnel, TUNNEL_SERVER_PORT};
 use tokio::runtime;
 use url::Url;
 
@@ -10,8 +10,8 @@ fn main(){
         .expect("Could not create tokio runtime");
     {
         {
-            rt.spawn(Tunnel::server());
-            let t = rt.block_on(Tunnel::client(Url::parse("http://joshpc.com").unwrap())).unwrap();
+            rt.spawn(Tunnel::server(("0.0.0.0", TUNNEL_SERVER_PORT)));
+            let t = rt.block_on(Tunnel::client(Url::parse("http://localhost").unwrap())).unwrap();
             for x in 1..5{
                 rt.block_on(t.send(vec![x, x*2, x*10]));
             }
