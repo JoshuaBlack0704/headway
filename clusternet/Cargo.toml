@@ -6,3 +6,10 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+aes = "0.8.3"
+async-traits = "0.0.0"
+flume = "0.10.14"
+tokio = { version = "1.29.1", features = ["full"] }
+trust-dns-resolver = "0.22.0"
+url = "2.4.0"
+x25519-dalek = "1.2.0"

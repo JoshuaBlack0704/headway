@@ -1,14 +1,15 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
+// Layer 1: Udp -> Broadcast encrypted raw packet
+// Layer 2; Encripted Tunnel -> Broadcast decrtyped packet
+// Layer 3: Routing mechanism -> Compose/Decompose messages
+// Layer 4: Resource management
+// Layer 5: Network Resources Frontend
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+// Ingress?
+// Egress?
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+pub mod udp;
+pub mod tunnnel;
+pub mod routing;
+
+
+
