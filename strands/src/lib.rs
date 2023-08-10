@@ -1,11 +1,10 @@
-pub struct Packet;
+pub mod common;
+pub(crate) mod peer_map;
+pub mod server;
 
-struct UdpData{
-    
-}
+
 
 struct UdpConnection{
-    data: UdpData,
 }
 
 struct ReliableExchange{
