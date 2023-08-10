@@ -1,5 +1,6 @@
 use std::{sync::Arc, net::SocketAddr};
 
+use log::info;
 use tokio::net::UdpSocket;
 
 use crate::{common::{NewPeer, UDP_BUFFER_SIZE}, peer_map::PeerMap};
@@ -29,14 +30,18 @@ impl UdpServer{
             };
 
             let mut pkt:Vec<u8> = Vec::with_capacity(len);
-            pkt.copy_from_slice(&buffer[..len]);
+            pkt.extend_from_slice(&buffer[..len]);
 
             if !peer_map.send(peer, pkt).await{
                 return ;
             }
         }
     }
-    pub async fn next_peer(&mut self) -> NewPeer{
+    pub async fn send_to(&self, peer: SocketAddr, data: &[u8]){
+        info!("Socket {} sending {} bytes to {}", self.get_local_addr(), data.len(), peer);
+        self.sock.send_to(data, peer).await.unwrap();
+    }
+    pub async fn next_peer(&self) -> NewPeer{
         self.new_peer.recv_async().await.unwrap()
     }
     pub fn get_local_addr(&self) -> SocketAddr{
