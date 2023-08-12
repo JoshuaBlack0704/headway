@@ -1,16 +1,7 @@
 pub mod common;
 pub(crate) mod peer_map;
 pub mod server;
+pub mod conn;
 
 
 
-struct UdpConnection{
-}
-
-struct ReliableExchange{
-    connection: UdpConnection,
-}
-
-struct UnreliableExchange{
-    
-}
